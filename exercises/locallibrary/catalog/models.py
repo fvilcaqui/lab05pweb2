@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse 
+from datetime import date
 #Used to generate URLs by reversing the URL patterns# Create your models here.
 import uuid # Requerida para las instancias de libros únicos
 class Genre(models.Model):
@@ -72,12 +73,14 @@ class BookInstance(models.Model):
     class Meta:
          ordering = ["due_back"]
 
-
     def __str__(self):
-        """
-        String para representar el Objeto del Modelo
-        """
-        return '%s (%s)' % (self.id,self.book.title)
+        """String for representing the Model object."""
+        return f'{self.id} ({self.book.title})'
+
+    @property
+    def is_overdue(self):
+        """Determines if the book is overdue based on due date and current date."""
+        return bool(self.due_back and date.today() > self.due_back)
 
 class Author(models.Model):
     """
