@@ -1,5 +1,6 @@
 from django.db import models
-from django.urls import reverse #Used to generate URLs by reversing the URL patterns# Create your models here.
+from django.urls import reverse 
+#Used to generate URLs by reversing the URL patterns# Create your models here.
 import uuid # Requerida para las instancias de libros únicos
 class Genre(models.Model):
     """
@@ -17,7 +18,6 @@ class Book(models.Model):
     """
     Modelo que representa un libro (pero no un Ejemplar específico).
     """
-
     title = models.CharField(max_length=200)
 
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
@@ -45,6 +45,12 @@ class Book(models.Model):
          """
          return reverse('book-detail', args=[str(self.id)])
 
+    def display_genre(self):
+         """
+         Creates a string for the Genre. This is required to display genre in Admin.
+         """
+         return ', '.join([ genre.name for genre in self.genre.all()[:3] ])
+    display_genre.short_description = 'Genre'
 class BookInstance(models.Model):
     """
     Modelo que representa una copia específica de un libro (i.e. que puede ser prestado por la biblioteca).
@@ -81,6 +87,9 @@ class Author(models.Model):
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)
     date_of_death = models.DateField('Died', null=True, blank=True)
+   
+    class Meta:
+            ordering = ['last_name', 'first_name']
 
     def get_absolute_url(self):
         """
